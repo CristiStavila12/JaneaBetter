@@ -16,9 +16,9 @@ public class Colors {
     }
     public enum ColorType {
 
-        GREEN(new Color(0.2, 0.9, 0.7, 3.8)),
-        PURPLE(new Color(0.6, 0.7, 1.2, 3.8)),
-        NONE(new Color(0.1, 0.2, 0.2, 4));
+        PURPLE(new Color(1.3, 1.4, 2.4, 2.4)),
+        GREEN(new Color(0.7, 3.2, 2.3, 2.5)),
+        NONE(new Color(0.1, 0.2, 0.2, 6));
 
 
         private final Color color;
@@ -37,7 +37,7 @@ public class Colors {
         return Math.sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
     }
     public static ColorType getArtefactColor(Color input){
-        if (input.d > 1) return ColorType.NONE;
+        if (input.d < 0.7 || input.d > 4.5) return ColorType.NONE;
         double greenDist = getColorDistance(input, ColorType.GREEN.getColor());
         double purpleDist = getColorDistance(input, ColorType.PURPLE.getColor());
         if (greenDist> purpleDist) return ColorType.PURPLE;

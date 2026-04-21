@@ -5,6 +5,7 @@ package org.firstinspires.ftc.teamcode.sirius;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.sirius.util.StickyGamepad;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "*TeleOp*")
@@ -21,9 +22,11 @@ public class TeleOp extends LinearOpMode {
         chassisController = new ChassisController(hardwareMap);
         robot = new Robot(this.hardwareMap);
         stickyGamepad = new StickyGamepad(gamepad1, this);
-
+        robot.init();
         waitForStart();
         while (opModeIsActive()) {
+            robot.autoIntake();
+            robot.update();
             chassisController.updateMovement(gamepad1);
             stickyGamepad.update();
 
@@ -33,6 +36,12 @@ public class TeleOp extends LinearOpMode {
 
             telemetry.addData("color", robot.colorRangeSensor.getColorSeenBySensor());
             Robot.dash.addData("color", robot.colorRangeSensor.getColorSeenBySensor());
+            Robot.dash.addData("spindexPos", robot.intake.spindex.getCurrentPosition());
+            Robot.dash.addData("dist", robot.colorRangeSensor.getDistance(DistanceUnit.CM));
+            Robot.dash.addData("targetPos", robot.intake.spindex.pos);
+            Robot.dash.addData("sorterStateCS", robot.sorterStateCS);
+            Robot.dash.addData("2nd", robot.secondSorterCS);
+            Robot.dash.addData("3rd", robot.thirdSorterCS);
             Robot.dash.update();
             telemetry.update();
         }
