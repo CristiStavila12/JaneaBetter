@@ -2,6 +2,9 @@
     <LynxUsbDevice name="Control Hub Portal" serialNumber="(embedded)" parentModuleAddress="173">
         <ServoHub name="Servo Hub 4" port="4">
             <Servo name="arm" port="0" />
+            <ContinuousRotationServo name="turret1" port="1" />
+            <ContinuousRotationServo name="outtakeRight" port="5" />
+            <ContinuousRotationServo name="outtakeLeft" port="4" />
         </ServoHub>
         <LynxModule name="Control Hub" port="173">
             <ControlHubImuBHI260AP name="imu" port="0" bus="0"/>
@@ -13,6 +16,7 @@
 
             <ContinuousRotationServo name="intakeSucker" port="0" />
             <ContinuousRotationServo name="spindex" port="1" />
+
 
             <RevColorSensorV3 name="intakeColorSensor" port="2" bus="2" />
 

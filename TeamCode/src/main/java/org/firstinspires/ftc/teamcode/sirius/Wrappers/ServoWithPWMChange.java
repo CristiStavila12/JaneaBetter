@@ -1,0 +1,15 @@
+package org.firstinspires.ftc.teamcode.sirius.Wrappers;
+
+import androidx.annotation.NonNull;
+
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.CRServoImplEx;
+import com.qualcomm.robotcore.hardware.HardwareDevice;
+import com.qualcomm.robotcore.hardware.ServoControllerEx;
+import com.qualcomm.robotcore.hardware.configuration.typecontainers.ServoConfigurationType;
+
+public class ServoWithPWMChange extends CRServoImplEx implements CRServo, HardwareDevice {
+    public ServoWithPWMChange(ServoControllerEx controller, int portNumber, @NonNull ServoConfigurationType servoType) {
+        super(controller, portNumber, servoType);
+    }
+}

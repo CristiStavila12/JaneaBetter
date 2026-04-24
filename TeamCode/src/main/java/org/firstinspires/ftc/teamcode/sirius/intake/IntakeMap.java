@@ -7,5 +7,5 @@ public class IntakeMap {
     public static String active = "intakeSucker";
     public static String spindex = "spindex";
     public static String spindexEncoder = "spindexEncoder";
-    public static String arm = "arm";
+
 }
