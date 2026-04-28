@@ -6,7 +6,7 @@ public class IntakeSettings {
     public static double collect1 = 1.05;
     public static double collect2 = 3.12;
     public static double collect3 = 5.3;
-    public static double score1 = 4.18;
-    public static double score2 = 6.2;
-    public static double score3 = 1.95;
+    public static double score1 = 4.6;
+    public static double score2 = 6.1;
+    public static double score3 = 2.2;
 }

@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.sirius.testing.SpindexTest.pos;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -16,13 +17,17 @@ import org.firstinspires.ftc.teamcode.sirius.Wrappers.Colors;
 import org.firstinspires.ftc.teamcode.sirius.Wrappers.Task;
 import org.firstinspires.ftc.teamcode.sirius.intake.IntakeSettings;
 import org.firstinspires.ftc.teamcode.sirius.intake.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.sirius.outtake.OuttakeSubsystem;
 import org.firstinspires.ftc.teamcode.sirius.util.States;
 
 
 public class Robot {
     public static Telemetry dash;
     public IntakeSubsystem intake;
+    public OuttakeSubsystem outtake;
     ColorRangeSensorWraper colorRangeSensor;
+    CRServo outtakeRight;
+    CRServo outtakeLeft;
 
     public States.CollectBallState collectBallStateCS = States.CollectBallState.IDLE;
     public States.SorterCapacity sorterCapacityCS = States.SorterCapacity.EMPTY;
@@ -30,10 +35,15 @@ public class Robot {
     public States.SecondSorterState secondSorterCS = States.SecondSorterState.EMPTY;
     public States.ThirdSorterState thirdSorterCS = States.ThirdSorterState.EMPTY;
     public States.SorterState sorterStateCS = States.SorterState.COLLECT1;
+    public boolean startScore = false;
+    public ElapsedTime timer = new ElapsedTime();
     public Robot(HardwareMap hardwareMap){
         dash = FtcDashboard.getInstance().getTelemetry();
         colorRangeSensor = new ColorRangeSensorWraper("intakeColorSensor", hardwareMap);
         intake = new IntakeSubsystem(hardwareMap);
+        outtake = new OuttakeSubsystem(hardwareMap);
+        outtakeLeft = hardwareMap.get(CRServo.class, "outtakeLeft");
+        outtakeRight = hardwareMap.get(CRServo.class, "outtakeRight");
     }
 
     public void autoIntake(){
@@ -53,7 +63,7 @@ public class Robot {
                     }
 
                 }
-                if (firstSorterCS != States.FirstSorterState.EMPTY && secondSorterCS == States.SecondSorterState.EMPTY && sorterStateCS == States.SorterState.COLLECT2 && Math.abs(intake.spindex.getCurrentPosition() -intake.spindex.pos) < 0.05) {
+                if (firstSorterCS != States.FirstSorterState.EMPTY && secondSorterCS == States.SecondSorterState.EMPTY && sorterStateCS == States.SorterState.COLLECT2 && Math.abs(intake.spindex.getCurrentPosition() -intake.spindex.pos) < 0.07) {
                     if (colorRangeSensor.getColorSeenBySensor() == Colors.ColorType.GREEN) {
                         secondSorterCS = States.SecondSorterState.GREEN;
                         intake.spindex.goToCollect3();
@@ -66,7 +76,7 @@ public class Robot {
                     }
 
                 }
-                if (secondSorterCS != States.SecondSorterState.EMPTY && thirdSorterCS == States.ThirdSorterState.EMPTY && sorterStateCS == States.SorterState.COLLECT3 && Math.abs(intake.spindex.getCurrentPosition() -intake.spindex.pos) < 0.05) {
+                if (secondSorterCS != States.SecondSorterState.EMPTY && thirdSorterCS == States.ThirdSorterState.EMPTY && sorterStateCS == States.SorterState.COLLECT3 && Math.abs(intake.spindex.getCurrentPosition() -intake.spindex.pos) < 0.07) {
                     if (colorRangeSensor.getColorSeenBySensor() == Colors.ColorType.GREEN) {
                         thirdSorterCS = States.ThirdSorterState.GREEN;
                         intake.spindex.goToScore1();
@@ -96,12 +106,38 @@ public class Robot {
         }
     }
 
+    public void score(){
+        if (startScore) {
+            intake.spindex.pos = -6700000;
+            outtake.score();
+            if (timer.milliseconds() > 500) {
+                intake.spindex.pos = IntakeSettings.collect1;
+                firstSorterCS = States.FirstSorterState.EMPTY;
+                secondSorterCS = States.SecondSorterState.EMPTY;
+                thirdSorterCS = States.ThirdSorterState.EMPTY;
+                sorterStateCS = States.SorterState.COLLECT1;
+                sorterCapacityCS = States.SorterCapacity.EMPTY;
+                collectBallStateCS = States.CollectBallState.IDLE;
+                intake.goToIdle();
+                outtake.arm.goToIdle();
+                startScore = false;
+            }
+        }
+    }
+
     public void update(){
         intake.spindex.power = intake.spindex.spindexPid.calculatePower(intake.spindex.getCurrentPosition() - intake.spindex.pos);
         intake.spindex.spindex.setPower(intake.spindex.power);
+        outtake.turetOdometry.pinPointLocalizer.Update();
+//        outtakeRight.setPower(1);
+//        outtakeLeft.setPower(1);
+        outtake.turetOdometry.updateFacingDirection();
+        score();
+
     }
 
     public void init(){
         intake.spindex.goToCollect1();
+        outtake.arm.goToIdle();
     }
 }

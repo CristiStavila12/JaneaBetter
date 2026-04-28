@@ -33,8 +33,15 @@ public class TeleOp extends LinearOpMode {
             if (stickyGamepad.x) {
                 robot.toggleIntake();
             }
+            if (stickyGamepad.right_bumper){
+                robot.startScore = true;
+                robot.timer.reset();
+            }
 
             telemetry.addData("color", robot.colorRangeSensor.getColorSeenBySensor());
+            Robot.dash.addData("x", robot.outtake.turetOdometry.pinPointLocalizer.getCurrentPosition().x);
+            Robot.dash.addData("y", robot.outtake.turetOdometry.pinPointLocalizer.getCurrentPosition().y);
+            Robot.dash.addData("h", robot.outtake.turetOdometry.pinPointLocalizer.getCurrentPosition().h);
             Robot.dash.addData("color", robot.colorRangeSensor.getColorSeenBySensor());
             Robot.dash.addData("spindexPos", robot.intake.spindex.getCurrentPosition());
             Robot.dash.addData("dist", robot.colorRangeSensor.getDistance(DistanceUnit.CM));

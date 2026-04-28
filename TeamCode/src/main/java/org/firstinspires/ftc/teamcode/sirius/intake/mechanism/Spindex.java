@@ -13,7 +13,7 @@ public class Spindex {
     public AnalogInput spindexEncoder;
     public double power;
     public double pos;
-    public PIDController spindexPid = new PIDController(0.9, 0, 0.05);
+    public PIDController spindexPid = new PIDController(1, 0, 0.085);
     public Spindex(HardwareMap hardwareMap){
         spindex = hardwareMap.get(CRServo.class, IntakeMap.spindex);
         spindexEncoder = hardwareMap.get(AnalogInput.class, IntakeMap.spindexEncoder);
