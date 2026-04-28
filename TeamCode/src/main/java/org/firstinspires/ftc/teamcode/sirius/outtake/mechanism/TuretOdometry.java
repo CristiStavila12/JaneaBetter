@@ -30,11 +30,11 @@ public class TuretOdometry {
     public CRServo turretServoLeft;
     public CRServo turretServoRight;
     DcMotorEx outtakeEncoder;
-    public static double gearRatio = 40/20 * 30/120;
+    public static double gearRatio = 0.48;
     public static double speedfar = 4100.0;
     public static double speedclose = 1700.0;
-    public static SparkFunOTOS.Pose2D goalPosition = new SparkFunOTOS.Pose2D(-1500, 3120, 0);
-    public static double maxContinuosLimit = 2*Math.PI;
+    public static SparkFunOTOS.Pose2D goalPosition = new SparkFunOTOS.Pose2D(1500, 3120, 0);
+    public static double maxContinuosLimit = 5.5;
     public static double offset = 0;
     public double rpmNow;
     public double tps;
@@ -80,12 +80,12 @@ public class TuretOdometry {
         lastFlyTelemUpdateNs = now;
     }
 
-    public static double offsetTicks = 5685;
+    public static double offsetTicks = 0;
 
     public double fromEncoderToRads() {
         double ticks = this.turretEncoder.getCurrentPosition() + offsetTicks;
         this.ticksPerRev = gearRatio * 8192.0;
-        return ((2.0 * ticks) * Math.PI) / ticksPerRev;
+        return ((2.0 * ticks) * Math.PI) / ticksPerRev/10;
     }
 
     private double LiniarizedTargetAngle(double targetAngle, double currContinuosAngle) {
@@ -190,7 +190,7 @@ public class TuretOdometry {
         );
 
         ShouldHaveTurretHeading = targetGlobalHeading - robotHeading;
-        currentTurretRel = fromEncoderToRads()/10;
+        currentTurretRel = fromEncoderToRads();
         errorRad = LiniarizedTargetAngle(ShouldHaveTurretHeading, currentTurretRel);
         if (errorRad != 1e9) {
             double cmd = -turretController.calculatePower(errorRad);
@@ -201,7 +201,7 @@ public class TuretOdometry {
             turretServoRight.setPower(0.0);
         }
         hoodServo.setPosition(targetAngle);
-        updateFlyWheel();
+//        updateFlyWheel();
 
     }
 

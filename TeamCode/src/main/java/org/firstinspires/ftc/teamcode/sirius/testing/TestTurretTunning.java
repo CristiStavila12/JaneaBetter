@@ -22,8 +22,8 @@ public class TestTurretTunning extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         this.turetOdometry = new org.firstinspires.ftc.teamcode.sirius.outtake.mechanism.TuretOdometry(this.hardwareMap);
         this.robot = new Robot(this.hardwareMap);
-        turetOdometry.turretEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        turetOdometry.turretEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        turetOdometry.turretEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        turetOdometry.turretEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         waitForStart();
         while (opModeIsActive()) {
             if (reset){
