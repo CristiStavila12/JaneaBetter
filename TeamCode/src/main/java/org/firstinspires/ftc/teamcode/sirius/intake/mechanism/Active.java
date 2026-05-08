@@ -23,4 +23,6 @@ public class Active {
         motor.setPower(0.0);
     }
 
+    public void outtake() { motor.setPower(IntakeSettings.intakeSpeed);}
+
 }

@@ -3,7 +3,9 @@ package org.firstinspires.ftc.teamcode.sirius.intake.mechanism;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.sirius.Robot;
 import org.firstinspires.ftc.teamcode.sirius.intake.IntakeMap;
 import org.firstinspires.ftc.teamcode.sirius.intake.IntakeSettings;
 import org.firstinspires.ftc.teamcode.sirius.util.PIDController;
@@ -13,10 +15,13 @@ public class Spindex {
     public AnalogInput spindexEncoder;
     public double power;
     public double pos;
+    public ElapsedTime timer = new ElapsedTime();
+
     public PIDController spindexPid = new PIDController(1, 0, 0.085);
     public Spindex(HardwareMap hardwareMap){
         spindex = hardwareMap.get(CRServo.class, IntakeMap.spindex);
         spindexEncoder = hardwareMap.get(AnalogInput.class, IntakeMap.spindexEncoder);
+
     }
     public double getCurrentPosition(){
         return spindexEncoder.getVoltage()/3.3 * 2*Math.PI;
@@ -33,6 +38,8 @@ public class Spindex {
         pos = IntakeSettings.collect3;
     }
     public void goToScore1(){
+
+        timer.reset();
         pos = IntakeSettings.score1;
     }
     public void goToScore2(){

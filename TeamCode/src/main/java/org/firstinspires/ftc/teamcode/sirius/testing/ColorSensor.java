@@ -18,6 +18,7 @@ public class ColorSensor extends LinearOpMode {
         ColorRangeSensorWraper colorSensor = new ColorRangeSensorWraper("intakeColorSensor", hardwareMap);
         Robot robot = new Robot(hardwareMap);
         while (opModeInInit()){
+            robot.intake.active.intake();
             Robot.dash.addData("r", colorSensor.RGB.R);
             Robot.dash.addData("g", colorSensor.RGB.G);
             Robot.dash.addData("b", colorSensor.RGB.B);

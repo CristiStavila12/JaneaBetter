@@ -26,7 +26,7 @@ public class PinPointLocalizer {
     public static double Y = -40.616;
     public static double yawScalar = 1.0019d;
     public static PinPoint.EncoderDirection xPod = PinPoint.EncoderDirection.REVERSED;
-    public static PinPoint.EncoderDirection yPod = PinPoint.EncoderDirection.REVERSED;
+    public static PinPoint.EncoderDirection yPod = PinPoint.EncoderDirection.FORWARD;
 
     /* JADX WARN: Type inference failed for: r0v5, types: [java.lang.RuntimeException, java.lang.String, com.qualcomm.hardware.sparkfun.SparkFunOTOS$Pose2D] */
     /* JADX WARN: Type inference failed for: r0v6, types: [java.lang.RuntimeException, java.lang.String, com.qualcomm.hardware.sparkfun.SparkFunOTOS$Pose2D] */
@@ -40,7 +40,7 @@ public class PinPointLocalizer {
         public PinPointLocalizer(HardwareMap hm) {
             time = new ElapsedTime();
             this.imu = hm.get(IMU.class, OuttakeMap.IMU);
-            this.imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD, RevHubOrientationOnRobot.UsbFacingDirection.RIGHT)));
+            this.imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD, RevHubOrientationOnRobot.UsbFacingDirection.RIGHT    )));
             this.imu.resetYaw();
             pinPoint = hm.get(PinPoint.class, OuttakeMap.pinPoint);
             pinPoint.setOffsets(X, Y, DistanceUnit.MM);

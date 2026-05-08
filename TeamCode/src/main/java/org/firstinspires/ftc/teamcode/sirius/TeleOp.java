@@ -19,9 +19,9 @@ public class TeleOp extends LinearOpMode {
 
     @Override // com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
     public void runOpMode() throws InterruptedException {
-        chassisController = new ChassisController(hardwareMap);
         robot = new Robot(this.hardwareMap);
         stickyGamepad = new StickyGamepad(gamepad1, this);
+        chassisController = new ChassisController(hardwareMap);
         robot.init();
         waitForStart();
         while (opModeIsActive()) {
@@ -38,10 +38,10 @@ public class TeleOp extends LinearOpMode {
                 robot.timer.reset();
             }
 
-            telemetry.addData("color", robot.colorRangeSensor.getColorSeenBySensor());
-            Robot.dash.addData("x", robot.outtake.turetOdometry.pinPointLocalizer.getCurrentPosition().x);
-            Robot.dash.addData("y", robot.outtake.turetOdometry.pinPointLocalizer.getCurrentPosition().y);
-            Robot.dash.addData("h", robot.outtake.turetOdometry.pinPointLocalizer.getCurrentPosition().h);
+//            telemetry.addData("color", robot.colorRangeSensor.getColorSeenBySensor());
+//            Robot.dash.addData("x", robot.outtake.turet.pinPointLocalizer.getCurrentPosition().x);
+//            Robot.dash.addData("y", robot.outtake.turet.pinPointLocalizer.getCurrentPosition().y);
+//            Robot.dash.addData("h", robot.outtake.turetOdometry.pinPointLocalizer.getCurrentPosition().h);
             Robot.dash.addData("color", robot.colorRangeSensor.getColorSeenBySensor());
             Robot.dash.addData("spindexPos", robot.intake.spindex.getCurrentPosition());
             Robot.dash.addData("dist", robot.colorRangeSensor.getDistance(DistanceUnit.CM));

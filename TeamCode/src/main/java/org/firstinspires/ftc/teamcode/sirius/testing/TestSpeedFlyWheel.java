@@ -14,8 +14,9 @@ import org.firstinspires.ftc.teamcode.sirius.ChassisController;
 import org.firstinspires.ftc.teamcode.sirius.Robot;
 import org.firstinspires.ftc.teamcode.sirius.intake.IntakeMap;
 import org.firstinspires.ftc.teamcode.sirius.outtake.OuttakeMap;
-import org.firstinspires.ftc.teamcode.sirius.outtake.mechanism.TuretOdometry;
+//import org.firstinspires.ftc.teamcode.sirius.outtake.mechanism.TuretOdometry;
 import org.firstinspires.ftc.teamcode.sirius.util.PIDController;
+import org.firstinspires.ftc.teamcode.sirius.util.PIDControllerFurat;
 import org.firstinspires.ftc.teamcode.sirius.util.StickyGamepad;
 
 @TeleOp
@@ -60,12 +61,15 @@ public class TestSpeedFlyWheel extends LinearOpMode {
     public double power;
 
     public static double kf;
-    org.firstinspires.ftc.teamcode.sirius.outtake.mechanism.TuretOdometry turetOdometry;
+    public static double kd;
+    public static double ki;
+    public static double kp;
+//    org.firstinspires.ftc.teamcode.sirius.outtake.mechanism.TuretOdometry turetOdometry;
     long lastFlyCtrlUpdateNs = 0;
     public static final long FLYWHEEL_UPDATE_PERIOD_NS = 33_333_333L; // 30 Hz
 
-    public static PIDCoefficients coefficients = new PIDCoefficients(0,0,0);
-    public PIDController LaucnherSpeedController = new PIDController(0.0, 0, 0);
+
+    public PIDControllerFurat LaucnherSpeedController = new PIDControllerFurat(0.0, 0, 0, 0);
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -109,10 +113,11 @@ public class TestSpeedFlyWheel extends LinearOpMode {
                 LaucnherSpeedController.setTargetPosition(speed);
             }
 
-            LaucnherSpeedController.setPidCoefficients(coefficients);
+            LaucnherSpeedController.setPIDF(kp, ki, kd, kf);
+
             power = LaucnherSpeedController.calculatePower(rpmNow);
-            outtakeLeft.setPower(power + kf * Math.signum(LaucnherSpeedController.getTargetPosition() - rpmNow));
-            outtakeRight.setPower(power + kf * Math.signum(LaucnherSpeedController.getTargetPosition() - rpmNow));
+            outtakeLeft.setPower(power);
+            outtakeRight.setPower(power);
 
             // ---- loop rate measurement ----
 

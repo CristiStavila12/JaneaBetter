@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 /* loaded from: classes9.dex */
 public class ChassisController {
@@ -15,6 +16,11 @@ public class ChassisController {
     public static double speed = 1.0d;
     public static double rotSpeed = 1.0d;
 
+    private void unlockMotor(DcMotorEx motor) {
+        MotorConfigurationType motorType = motor.getMotorType().clone();
+        motorType.setAchieveableMaxRPMFraction(1.0);
+        motor.setMotorType(motorType);
+    }
     public ChassisController(HardwareMap hardwareMap) {
         this.leftFrontMotor = hardwareMap.get(DcMotorEx.class, "frontLeft");
         this.rightFrontMotor =  hardwareMap.get(DcMotorEx.class, "frontRight");
@@ -32,6 +38,10 @@ public class ChassisController {
         this.rightFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.leftRearMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.rightRearMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        unlockMotor(leftFrontMotor);
+        unlockMotor(rightFrontMotor);
+        unlockMotor(leftRearMotor);
+        unlockMotor(rightRearMotor);
     }
 
     public void updateMovement(Gamepad g) {

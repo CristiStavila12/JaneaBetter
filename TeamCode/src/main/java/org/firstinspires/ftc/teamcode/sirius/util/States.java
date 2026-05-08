@@ -12,7 +12,8 @@ public class States {
     /* loaded from: classes7.dex */
     public enum CollectBallState {
         IDLE,
-        SUCK
+        SUCK,
+        UNSUCK
     }
 
     /* loaded from: classes7.dex */

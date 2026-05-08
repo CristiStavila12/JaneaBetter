@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.sirius.testing.SpindexTest.pos;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -26,6 +27,7 @@ public class Robot {
     public IntakeSubsystem intake;
     public OuttakeSubsystem outtake;
     ColorRangeSensorWraper colorRangeSensor;
+
     CRServo outtakeRight;
     CRServo outtakeLeft;
 
@@ -63,7 +65,7 @@ public class Robot {
                     }
 
                 }
-                if (firstSorterCS != States.FirstSorterState.EMPTY && secondSorterCS == States.SecondSorterState.EMPTY && sorterStateCS == States.SorterState.COLLECT2 && Math.abs(intake.spindex.getCurrentPosition() -intake.spindex.pos) < 0.07) {
+                if (firstSorterCS != States.FirstSorterState.EMPTY && secondSorterCS == States.SecondSorterState.EMPTY && sorterStateCS == States.SorterState.COLLECT2 && Math.abs(intake.spindex.getCurrentPosition() -intake.spindex.pos) < 0.1) {
                     if (colorRangeSensor.getColorSeenBySensor() == Colors.ColorType.GREEN) {
                         secondSorterCS = States.SecondSorterState.GREEN;
                         intake.spindex.goToCollect3();
@@ -76,23 +78,32 @@ public class Robot {
                     }
 
                 }
-                if (secondSorterCS != States.SecondSorterState.EMPTY && thirdSorterCS == States.ThirdSorterState.EMPTY && sorterStateCS == States.SorterState.COLLECT3 && Math.abs(intake.spindex.getCurrentPosition() -intake.spindex.pos) < 0.07) {
+                if (secondSorterCS != States.SecondSorterState.EMPTY && thirdSorterCS == States.ThirdSorterState.EMPTY && sorterStateCS == States.SorterState.COLLECT3 && Math.abs(intake.spindex.getCurrentPosition() -intake.spindex.pos) < 0.1) {
                     if (colorRangeSensor.getColorSeenBySensor() == Colors.ColorType.GREEN) {
                         thirdSorterCS = States.ThirdSorterState.GREEN;
                         intake.spindex.goToScore1();
-                        sorterStateCS = States.SorterState.SCORE1;
-                        sorterCapacityCS = States.SorterCapacity.FULL;
+                            collectBallStateCS = States.CollectBallState.UNSUCK;
+                            intake.active.outtake();
+                            sorterStateCS = States.SorterState.SCORE1;
+                            sorterCapacityCS = States.SorterCapacity.FULL;
                     }
                     if (colorRangeSensor.getColorSeenBySensor() == Colors.ColorType.PURPLE) {
                         thirdSorterCS = States.ThirdSorterState.PURPLE;
                         intake.spindex.goToScore1();
-                        sorterStateCS = States.SorterState.SCORE1;
-                        sorterCapacityCS = States.SorterCapacity.FULL;
+                        timer.reset();
+                            sorterStateCS = States.SorterState.SCORE1;
+                            sorterCapacityCS = States.SorterCapacity.FULL;
                     }
 
                 }
 
             }
+        }
+    }
+    public void intake(){
+        if (sorterCapacityCS == States.SorterCapacity.FULL && intake.spindex.timer.milliseconds()>500){
+            collectBallStateCS = States.CollectBallState.UNSUCK;
+            intake.active.outtake();
         }
     }
 
@@ -103,14 +114,19 @@ public class Robot {
         } else if (collectBallStateCS == States.CollectBallState.SUCK) {
             intake.goToIdle();
             collectBallStateCS = States.CollectBallState.IDLE;
+        } else if (collectBallStateCS == States.CollectBallState.UNSUCK){
+            intake.goToIdle();
+            collectBallStateCS = States.CollectBallState.IDLE;
         }
     }
 
     public void score(){
         if (startScore) {
-            intake.spindex.pos = -6700000;
+            intake.goToCollect();
+            collectBallStateCS = States.CollectBallState.SUCK;
+            intake.spindex.pos = -67676767;
             outtake.score();
-            if (timer.milliseconds() > 500) {
+            if (timer.milliseconds() > 1000) {
                 intake.spindex.pos = IntakeSettings.collect1;
                 firstSorterCS = States.FirstSorterState.EMPTY;
                 secondSorterCS = States.SecondSorterState.EMPTY;
@@ -128,15 +144,17 @@ public class Robot {
     public void update(){
         intake.spindex.power = intake.spindex.spindexPid.calculatePower(intake.spindex.getCurrentPosition() - intake.spindex.pos);
         intake.spindex.spindex.setPower(intake.spindex.power);
-        outtake.turetOdometry.pinPointLocalizer.Update();
-//        outtakeRight.setPower(1);
-//        outtakeLeft.setPower(1);
-        outtake.turetOdometry.updateFacingDirection();
+//        outtake.turetOdometry.pinPointLocalizer.Update();
+//        outtake.turetOdometry.updateFacingDirection();
+        intake();
+        outtake.turet.update();
         score();
 
     }
 
     public void init(){
+//        outtake.turetOdometry.turretEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        outtake.turetOdometry.outtakeEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         intake.spindex.goToCollect1();
         outtake.arm.goToIdle();
     }

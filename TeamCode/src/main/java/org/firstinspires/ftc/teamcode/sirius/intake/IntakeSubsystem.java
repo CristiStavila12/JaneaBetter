@@ -25,6 +25,9 @@ public class IntakeSubsystem {
     public void goToCollect(){
         active.intake();
     }
+    public void outtake(){
+        active.outtake();
+    }
 
     public void updateNegativeRotationCounter() {
         double currentPosition = spindex.getCurrentPosition();

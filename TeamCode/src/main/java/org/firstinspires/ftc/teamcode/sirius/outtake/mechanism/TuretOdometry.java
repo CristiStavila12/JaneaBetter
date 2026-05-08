@@ -15,6 +15,8 @@ import org.firstinspires.ftc.teamcode.sirius.Wrappers.LinearFunction;
 import org.firstinspires.ftc.teamcode.sirius.intake.IntakeMap;
 import org.firstinspires.ftc.teamcode.sirius.outtake.OuttakeMap;
 import org.firstinspires.ftc.teamcode.sirius.util.PIDController;
+import org.firstinspires.ftc.teamcode.sirius.util.PIDControllerFurat;
+import org.firstinspires.ftc.teamcode.sirius.util.PIDFController;
 
 @Config
 public class TuretOdometry {
@@ -29,12 +31,12 @@ public class TuretOdometry {
     CRServo outtakeLeft;
     public CRServo turretServoLeft;
     public CRServo turretServoRight;
-    DcMotorEx outtakeEncoder;
+    public DcMotorEx outtakeEncoder;
     public static double gearRatio = 0.48;
     public static double speedfar = 4100.0;
     public static double speedclose = 1700.0;
-    public static SparkFunOTOS.Pose2D goalPosition = new SparkFunOTOS.Pose2D(1500, 3120, 0);
-    public static double maxContinuosLimit = 5.5;
+    public static SparkFunOTOS.Pose2D goalPosition = new SparkFunOTOS.Pose2D(3160, 1600, 0);
+    public static double maxContinuosLimit = 6.3;
     public static double offset = 0;
     public double rpmNow;
     public double tps;
@@ -48,9 +50,8 @@ public class TuretOdometry {
     public double targetAngle;
     public double robotHeading;
     public double currentTurretRel;
-    public PIDController turretController = new PIDController(0.67, 0.0, 0.01);
-    public PIDController LaucnherSpeedController =
-            new PIDController(0.00013, 0, 0.0000006);
+    public PIDController turretController = new PIDController(1.7, 0.0, 0.04);
+    PIDControllerFurat LaucnherSpeedController = new PIDControllerFurat(0.002, 0, 0.0000006, 0.0002);
     public OuttakeShooter outtakeShooter;
     public double errorRad;
 
@@ -65,13 +66,12 @@ public class TuretOdometry {
 
         outtakeLeft = hardwareMap.get(CRServo.class, OuttakeMap.outtakeLeft);
 
-        outtakeEncoder = hardwareMap.get(DcMotorEx.class, "rearLeft");
-        outtakeEncoder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        outtakeEncoder = hardwareMap.get(DcMotorEx.class, "rearRight");
         outtakeEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         outtakeEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        turretEncoder = hardwareMap.get(DcMotorEx.class, "frontLeft");
-        turretEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turretEncoder = hardwareMap.get(DcMotorEx.class, "frontRight");
+        turretEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         turretEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
@@ -80,7 +80,7 @@ public class TuretOdometry {
         lastFlyTelemUpdateNs = now;
     }
 
-    public static double offsetTicks = 0;
+    public static double offsetTicks = 18200;
 
     public double fromEncoderToRads() {
         double ticks = this.turretEncoder.getCurrentPosition() + offsetTicks;
@@ -134,35 +134,21 @@ public class TuretOdometry {
 
         // ---- 4) compute power with overspeed drop so rpm can go DOWN ----
         double power;
-
         power = LaucnherSpeedController.calculatePower(rpmNow);
-
-        // ---- 5) apply power (both motors if you want) ----
-        outtakeRight.setPower(power  + 0.42 * Math.signum(LaucnherSpeedController.getTargetPosition() - rpmNow));
-        outtakeLeft.setPower(power  + 0.42 * Math.signum(LaucnherSpeedController.getTargetPosition() - rpmNow));
-//        motor.setPower(power  + 1 * Math.signum(LaucnherSpeedController.getTargetPosition() - rpmNow));
-//        turretEncoder.setPower(power  + 1 * Math.signum(LaucnherSpeedController.getTargetPosition() - rpmNow));
-        // ---- 6) telemetry ----
-
-        Robot.dash.addData("rawPower", power);
-        Robot.dash.addData("powerFF", power  + 0.25 * Math.signum(LaucnherSpeedController.getTargetPosition() - rpmNow));
-        Robot.dash.update();
+        outtakeRight.setPower(power);
+        outtakeLeft.setPower(power);
 
 
-
-        double distRaw = pinPointLocalizer.getDistanceFromTwoPoints(raw, goalPosition);
-        double distTp  = pinPointLocalizer.getDistanceFromTwoPoints(tp, goalPosition);
+    double distTp  = pinPointLocalizer.getDistanceFromTwoPoints(tp, goalPosition);
 
         Robot.dash.addData("distTp", distTp);
-
-
     }
 
 
 
     public void updateFacingDirection() {
         SparkFunOTOS.Pose2D robotPose = pinPointLocalizer.getCurrentPosition();
-        robotPose = new SparkFunOTOS.Pose2D(-robotPose.y, robotPose.x, robotPose.h);
+        robotPose = new SparkFunOTOS.Pose2D(robotPose.y, robotPose.x, robotPose.h);
 
         robotHeading = robotPose.h;
         dx = goalPosition.x - robotPose.x;
@@ -192,36 +178,35 @@ public class TuretOdometry {
         ShouldHaveTurretHeading = targetGlobalHeading - robotHeading;
         currentTurretRel = fromEncoderToRads();
         errorRad = LiniarizedTargetAngle(ShouldHaveTurretHeading, currentTurretRel);
-        if (errorRad != 1e9) {
-            double cmd = -turretController.calculatePower(errorRad);
-            turretServoLeft.setPower(-cmd + Math.signum(errorRad) * 0.061);
-            turretServoRight.setPower(-cmd + Math.signum(errorRad) * 0.061);
-        } else {
-            turretServoLeft.setPower(0.0);
-            turretServoRight.setPower(0.0);
-        }
+//        if (errorRad != 1e9) {
+//            double cmd = -turretController.calculatePower(errorRad);
+//            turretServoLeft.setPower(-cmd + Math.signum(errorRad) * 0.061);
+//            turretServoRight.setPower(-cmd + Math.signum(errorRad) * 0.061);
+//        } else {
+//            turretServoLeft.setPower(0.0);
+//            turretServoRight.setPower(0.0);
+//        }
         hoodServo.setPosition(targetAngle);
 //        updateFlyWheel();
 
     }
 
 
+        double getTicksPerSecond(DcMotorEx flyWheelEncoder) {
+            int pos = flyWheelEncoder.getCurrentPosition();
+            long now = System.nanoTime();
+            if (lastTimeNs == 0) {
+                lastTimeNs = now;
+                lastPos = pos;
+                return 0;
+            }
+            double dt = (now - lastTimeNs) / 1e9;
+            int dPos = pos - lastPos;
 
-    double getTicksPerSecond(DcMotorEx flyWheelEncoder) {
-        int pos = flyWheelEncoder.getCurrentPosition();
-        long now = System.nanoTime();
-        if (lastTimeNs == 0) {
             lastTimeNs = now;
             lastPos = pos;
-            return 0;
+
+            if (dt <= 0) return 0;
+            return dPos / dt;
         }
-        double dt = (now - lastTimeNs) / 1e9;
-        int dPos = pos - lastPos;
-
-        lastTimeNs = now;
-        lastPos = pos;
-
-        if (dt <= 0) return 0;
-        return dPos / dt;
-    }
 }

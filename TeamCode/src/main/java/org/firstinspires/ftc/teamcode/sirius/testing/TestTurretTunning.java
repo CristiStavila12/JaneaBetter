@@ -3,45 +3,66 @@ package org.firstinspires.ftc.teamcode.sirius.testing;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.PIDCoefficients;
 
 import org.firstinspires.ftc.teamcode.sirius.Robot;
+import org.firstinspires.ftc.teamcode.sirius.outtake.mechanism.CyliisTuret;
 
-@TeleOp
+@TeleOp(name = "Test Turret Tunning")
 @Config
-/* loaded from: classes8.dex */
 public class TestTurretTunning extends LinearOpMode {
-    public static PIDCoefficients coefs = new PIDCoefficients(0.0, 0.0, 0.0);
+
     Robot robot;
-    org.firstinspires.ftc.teamcode.sirius.outtake.mechanism.TuretOdometry turetOdometry;
+    CyliisTuret turret;
 
-    public static boolean reset = false;
+    // Change these from Dashboard
+    public static double goalX = 1300;
+    public static double goalY = -3100;
 
-    @Override // com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+    public static boolean resetOdo = false;
+
+    public static boolean runFlywheel = false;
+    public static boolean runTurret = true;
+
+    @Override
     public void runOpMode() throws InterruptedException {
-        this.turetOdometry = new org.firstinspires.ftc.teamcode.sirius.outtake.mechanism.TuretOdometry(this.hardwareMap);
-        this.robot = new Robot(this.hardwareMap);
-//        turetOdometry.turretEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        turetOdometry.turretEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        robot = new Robot(hardwareMap);
+
+        // If your Robot already creates the turret, use this:
+        turret = robot.outtake.turet;
+
+        // If the line above gives an error, delete it and use this instead:
+        // turret = new CyliisTuret(hardwareMap);
+
         waitForStart();
+
         while (opModeIsActive()) {
-            if (reset){
-                turetOdometry.turretEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                turetOdometry.turretEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                reset = false;
+
+            CyliisTuret.goalX = goalX;
+            CyliisTuret.goalY = goalY;
+
+            if (resetOdo) {
+                turret.pinPointLocalizer.Reset();
+                resetOdo = false;
             }
 
-            Robot.dash.addData("currPos", turetOdometry.turretEncoder.getCurrentPosition());
-            Robot.dash.addData("heading", turetOdometry.robotHeading);
-            Robot.dash.addData("currentPos", turetOdometry.currentTurretRel);
-            Robot.dash.addData("targetPos", turetOdometry.ShouldHaveTurretHeading);
-            Robot.dash.addData("targetPos2", turetOdometry.targetGlobalHeading);
-            Robot.dash.update();
+            if (runTurret) {
+                turret.pinPointLocalizer.Update();
+                turret.update();
+            } else {
+                turret.pinPointLocalizer.Update();
+            }
 
-            this.turetOdometry.updateFacingDirection();
-            this.turetOdometry.turretController.setPidCoefficients(coefs);
-            this.turetOdometry.pinPointLocalizer.Update();
+            Robot.dash.addData("goalX", goalX);
+            Robot.dash.addData("goalY", goalY);
+
+            Robot.dash.addData("robotX", turret.pinPointLocalizer.getCurrentPosition().x);
+            Robot.dash.addData("robotY", turret.pinPointLocalizer.getCurrentPosition().y);
+            Robot.dash.addData("robotHeading", turret.pinPointLocalizer.getCurrentPosition().h);
+
+            Robot.dash.addData("turret target angle", CyliisTuret.turretTargetAngle);
+
+            Robot.dash.update();
         }
     }
 }

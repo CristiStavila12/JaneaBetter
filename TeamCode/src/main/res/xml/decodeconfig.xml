@@ -5,8 +5,8 @@
             <Servo name="hood" port="1" />
             <ContinuousRotationServo name="outtakeRight" port="5" />
             <ContinuousRotationServo name="outtakeLeft" port="4" />
-            <ContinuousRotationServo name="turretLeft" port="2" />
-            <ContinuousRotationServo name="turretRight" port="3" />
+            <Servo name="turretLeft" port="2" />
+            <Servo name="turretRight" port="3" />
         </ServoHub>
 
         <ServoHub name="Servo Hub 3" port="3">

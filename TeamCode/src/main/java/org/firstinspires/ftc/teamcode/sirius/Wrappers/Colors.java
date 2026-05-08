@@ -16,8 +16,8 @@ public class Colors {
     }
     public enum ColorType {
 
-        PURPLE(new Color(1.3, 1.4, 2.4, 2.4)),
-        GREEN(new Color(0.7, 3.2, 2.3, 2.5)),
+        PURPLE(new Color(0.5, 0.6, 0.9, 4.1)),
+        GREEN(new Color(0.4, 1.5, 1.2, 1.8)),
         NONE(new Color(0.1, 0.2, 0.2, 6));
 
 
