@@ -33,14 +33,14 @@ public class CyliisTuret {
     public PinPointLocalizer pinPointLocalizer;
     public DcMotorEx outtakeEncoder;
 
-    PIDController LaucnherSpeedController = new PIDController(0.004,0, 0.00001);
+    PIDController LaucnherSpeedController = new PIDController(0.005,0, 0.00001);
 
     // Change these from Dashboard
-    public static double goalX = 1100;
-    public static double goalY = -3000;
+    public static double goalX = 1250;
+    public static double goalY = -3100;
 
     public static double speedfar = 3500.0;
-    public static double speedclose = 1400.0;
+    public static double speedclose = 1600.0;
 
     public static double turretTargetAngle;
 
@@ -164,8 +164,8 @@ public class CyliisTuret {
 
 
         power = LaucnherSpeedController.calculatePower(rpmNow);
-        outtakeRight.setPower(power  + 0.6 * Math.signum(LaucnherSpeedController.getTargetPosition() - rpmNow));
-        outtakeLeft.setPower(power  + 0.6 * Math.signum(LaucnherSpeedController.getTargetPosition() - rpmNow));
+        outtakeRight.setPower(power  + 0.54 * Math.signum(LaucnherSpeedController.getTargetPosition() - rpmNow));
+        outtakeLeft.setPower(power  + 0.54 * Math.signum(LaucnherSpeedController.getTargetPosition() - rpmNow));
 
 
         double distTp  = pinPointLocalizer.getDistanceFromTwoPoints(tp, goalPosition);

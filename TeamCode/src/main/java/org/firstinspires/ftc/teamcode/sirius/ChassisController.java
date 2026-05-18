@@ -17,7 +17,7 @@ public class ChassisController {
     public static double rotSpeed = 1.0d;
 
     private void unlockMotor(DcMotorEx motor) {
-        MotorConfigurationType motorType = motor.getMotorType().clone();
+        MotorConfigurationType motorType = motor.getMotorType();
         motorType.setAchieveableMaxRPMFraction(1.0);
         motor.setMotorType(motorType);
     }

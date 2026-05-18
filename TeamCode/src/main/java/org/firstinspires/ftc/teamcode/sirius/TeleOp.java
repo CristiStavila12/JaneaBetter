@@ -37,6 +37,9 @@ public class TeleOp extends LinearOpMode {
                 robot.startScore = true;
                 robot.timer.reset();
             }
+            if (stickyGamepad.dpad_up){
+                robot.sort();
+            }
 
 //            telemetry.addData("color", robot.colorRangeSensor.getColorSeenBySensor());
 //            Robot.dash.addData("x", robot.outtake.turet.pinPointLocalizer.getCurrentPosition().x);
@@ -49,6 +52,7 @@ public class TeleOp extends LinearOpMode {
             Robot.dash.addData("sorterStateCS", robot.sorterStateCS);
             Robot.dash.addData("2nd", robot.secondSorterCS);
             Robot.dash.addData("3rd", robot.thirdSorterCS);
+            telemetry.addData("sort?", robot.startSort);
             Robot.dash.update();
             telemetry.update();
         }
